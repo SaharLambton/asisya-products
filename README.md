@@ -2,7 +2,7 @@
 
 Prueba técnica para la posición **Dev II en Asisya**. Es un sistema de gestión de productos con API REST en .NET 8 y frontend en React.
 
-[![CI Pipeline](https://github.com/YOUR_USER/asisya-products/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USER/asisya-products/actions)
+[![CI Pipeline](https://github.com/SaharLambton/asisya-products/actions/workflows/ci.yml/badge.svg)](https://github.com/SaharLambton/asisya-products/actions)
 
 ---
 
