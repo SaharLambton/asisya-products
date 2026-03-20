@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: asisya_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: asisya_products
+      POSTGRES_USER: asisya
+      POSTGRES_PASSWORD: asisya_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asisya -d asisya_products"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── API ─────────────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: asisya_api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=asisya_products;Username=asisya;Password=asisya_pass"
+      Jwt__Key: "ThisIsAVerySecretKeyThatMustBeAtLeast32CharactersLong!"
+      Jwt__Issuer: "asisya-products-api"
+      Jwt__Audience: "asisya-products-client"
+      Jwt__ExpiresInHours: "8"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── pgAdmin (optional, for DB inspection) ───────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: asisya_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@asisya.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    profiles:
+      - tools
+
+  # ── Frontend ─────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: asisya_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      VITE_API_URL: "http://localhost:8080"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
