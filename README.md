@@ -59,7 +59,7 @@ También usé un `ServiceResult<T>` como wrapper de respuestas en los servicios 
 Lo más rápido es con docker-compose, solo necesitas tener Docker instalado:
 
 ```bash
-git clone https://github.com/YOUR_USER/asisya-products.git
+git clone https://github.com/SaharLambton/asisya-products.git
 cd asisya-products
 
 docker compose up --build
